@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,12 +12,12 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-tech-green rounded-lg flex items-center justify-center">
               <span className="text-dark-primary font-bold text-lg font-mono">&lt;/&gt;</span>
             </div>
             <span className="text-text-primary font-bold text-xl">CodeInterview Pro</span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -33,11 +34,11 @@ const Header = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" className="text-text-secondary hover:text-text-primary hover:bg-dark-secondary">
-              Login
+            <Button variant="ghost" className="text-text-secondary hover:text-text-primary hover:bg-dark-secondary" asChild>
+              <Link to="/login">Login</Link>
             </Button>
-            <Button className="bg-tech-green hover:bg-tech-green/90 text-dark-primary font-semibold">
-              Start Free Trial
+            <Button className="bg-tech-green hover:bg-tech-green/90 text-dark-primary font-semibold" asChild>
+              <Link to="/register">Start Free Trial</Link>
             </Button>
           </div>
 
@@ -64,11 +65,11 @@ const Header = () => {
                 About
               </a>
               <div className="flex flex-col space-y-2 pt-4">
-                <Button variant="ghost" className="text-text-secondary hover:text-text-primary hover:bg-dark-secondary justify-start">
-                  Login
+                <Button variant="ghost" className="text-text-secondary hover:text-text-primary hover:bg-dark-secondary justify-start" asChild>
+                  <Link to="/login">Login</Link>
                 </Button>
-                <Button className="bg-tech-green hover:bg-tech-green/90 text-dark-primary font-semibold justify-start">
-                  Start Free Trial
+                <Button className="bg-tech-green hover:bg-tech-green/90 text-dark-primary font-semibold justify-start" asChild>
+                  <Link to="/register">Start Free Trial</Link>
                 </Button>
               </div>
             </nav>
