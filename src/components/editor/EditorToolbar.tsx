@@ -14,7 +14,10 @@ import {
   Settings,
   Maximize2,
   Sun,
-  Moon
+  Moon,
+  play,
+  PanelRightClose,
+  PanelRightOpen
 } from 'lucide-react';
 
 interface EditorToolbarProps {
@@ -30,8 +33,10 @@ interface EditorToolbarProps {
   onSettings: () => void;
   onFullscreen: () => void;
   onThemeToggle: () => void;
+  onExecutionToggle?: () => void;
   theme: 'vs-dark' | 'light';
   isFullscreen: boolean;
+  showExecutionPanel?: boolean;
 }
 
 export const EditorToolbar: React.FC<EditorToolbarProps> = ({
@@ -47,19 +52,23 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   onSettings,
   onFullscreen,
   onThemeToggle,
+  onExecutionToggle,
   theme,
-  isFullscreen
+  isFullscreen,
+  showExecutionPanel = true
 }) => {
   const IconButton: React.FC<{
     icon: React.ReactNode;
     onClick: () => void;
     title: string;
     disabled?: boolean;
-  }> = ({ icon, onClick, title, disabled = false }) => (
+    variant?: 'default' | 'ghost';
+    className?: string;
+  }> = ({ icon, onClick, title, disabled = false, variant = 'ghost', className = '' }) => (
     <Button
-      variant="ghost"
+      variant={variant}
       size="sm"
-      className="h-8 w-8 p-0 text-text-secondary hover:text-white disabled:opacity-50"
+      className={`h-8 w-8 p-0 text-text-secondary hover:text-white disabled:opacity-50 ${className}`}
       onClick={onClick}
       title={title}
       disabled={disabled}
@@ -102,6 +111,18 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
         onClick={onFormat} 
         title="Format Code (Alt+Shift+F)" 
       />
+
+      <Separator orientation="vertical" className="h-6 bg-border-dark mx-2" />
+
+      {/* Execution Panel Toggle */}
+      {onExecutionToggle && (
+        <IconButton
+          icon={showExecutionPanel ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}
+          onClick={onExecutionToggle}
+          title={showExecutionPanel ? "Hide Execution Panel" : "Show Execution Panel"}
+          className="text-tech-green hover:text-tech-green/80"
+        />
+      )}
 
       <div className="flex-1" />
 

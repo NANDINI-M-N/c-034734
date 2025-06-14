@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useRef } from 'react';
 import { MonacoEditor } from './MonacoEditor';
 import { LanguageSelector } from './LanguageSelector';
@@ -6,10 +5,11 @@ import { EditorTabs } from './EditorTabs';
 import { EditorToolbar } from './EditorToolbar';
 import { EditorStatusBar } from './EditorStatusBar';
 import { EditorSettings } from './EditorSettings';
+import { ExecutionPanel } from './execution/ExecutionPanel';
 import { useEditorStore } from '@/hooks/useEditorStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from 'lucide-react';
 
 export const AdvancedCodeEditor: React.FC = () => {
   const {
@@ -30,6 +30,7 @@ export const AdvancedCodeEditor: React.FC = () => {
 
   const [showSettings, setShowSettings] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [showExecutionPanel, setShowExecutionPanel] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editorInstanceRef = useRef<any>(null);
@@ -144,6 +145,10 @@ export const AdvancedCodeEditor: React.FC = () => {
     setIsFullscreen(!isFullscreen);
   }, [isFullscreen]);
 
+  const handleExecutionToggle = useCallback(() => {
+    setShowExecutionPanel(!showExecutionPanel);
+  }, [showExecutionPanel]);
+
   if (!currentTab) {
     return <div>Loading...</div>;
   }
@@ -178,6 +183,8 @@ export const AdvancedCodeEditor: React.FC = () => {
         onThemeToggle={handleThemeToggle}
         theme={settings.theme}
         isFullscreen={isFullscreen}
+        onExecutionToggle={handleExecutionToggle}
+        showExecutionPanel={showExecutionPanel}
       />
 
       {/* Editor Tabs */}
@@ -227,16 +234,49 @@ export const AdvancedCodeEditor: React.FC = () => {
         )}
 
         {/* Editor */}
-        <div className="flex-1 flex flex-col">
-          <MonacoEditor
-            language={currentTab.language}
-            theme={settings.theme}
-            fontSize={settings.fontSize}
-            value={currentTab.content}
-            onChange={handleEditorChange}
-            onCursorPositionChange={updateCursorPosition}
-          />
+        <div className={`flex-1 flex ${showExecutionPanel ? 'flex-col' : ''}`}>
+          <div className={`${showExecutionPanel ? 'flex-1' : 'w-full'} flex flex-col`}>
+            <MonacoEditor
+              language={currentTab.language}
+              theme={settings.theme}
+              fontSize={settings.fontSize}
+              value={currentTab.content}
+              onChange={handleEditorChange}
+              onCursorPositionChange={updateCursorPosition}
+            />
+          </div>
+
+          {/* Execution Panel */}
+          {showExecutionPanel && (
+            <div className="h-80 border-t border-border-dark relative">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowExecutionPanel(false)}
+                className="absolute top-2 right-2 z-10 h-6 w-6 p-0 bg-dark-secondary border border-border-dark"
+              >
+                <PanelRightClose className="w-3 h-3" />
+              </Button>
+              <ExecutionPanel
+                language={currentTab.language}
+                code={currentTab.content}
+                isVisible={showExecutionPanel}
+              />
+            </div>
+          )}
         </div>
+
+        {/* Execution Panel Toggle (when hidden) */}
+        {!showExecutionPanel && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowExecutionPanel(true)}
+            className="absolute bottom-16 right-2 z-10 h-8 w-8 p-0 bg-dark-secondary border border-border-dark"
+          >
+            <PanelRightOpen className="w-4 h-4" />
+          </Button>
+        )}
       </div>
 
       {/* Status Bar */}
