@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -19,7 +18,7 @@ import {
   Plus,
   Minus,
   Clock,
-  Memory,
+  MemoryStick,
   CheckCircle,
   XCircle,
   Users,
@@ -320,7 +319,7 @@ vector<int> twoSum(vector<int>& nums, int target) {
                       <span>{executionResult.runtime}ms</span>
                     </div>
                     <div className="flex items-center space-x-1 text-blue-400">
-                      <Memory className="w-3 h-3" />
+                      <MemoryStick className="w-3 h-3" />
                       <span>{executionResult.memory}MB</span>
                     </div>
                   </div>
