@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import type { Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
 
 interface Interview {
   id: string;
@@ -83,7 +84,7 @@ export const useInterviews = () => {
     }
   };
 
-  const createInterview = async (interviewData: Partial<Interview>) => {
+  const createInterview = async (interviewData: TablesInsert<'interviews'>) => {
     try {
       const { data, error } = await supabase
         .from('interviews')
@@ -113,7 +114,7 @@ export const useInterviews = () => {
     }
   };
 
-  const updateInterview = async (id: string, updates: Partial<Interview>) => {
+  const updateInterview = async (id: string, updates: TablesUpdate<'interviews'>) => {
     try {
       const { data, error } = await supabase
         .from('interviews')
