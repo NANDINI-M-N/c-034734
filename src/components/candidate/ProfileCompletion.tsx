@@ -5,15 +5,18 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, AlertCircle, User, FileText, Award } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileCompletion = () => {
+  const navigate = useNavigate();
+  
   const completionItems = [
-    { name: 'Personal Information', completed: true, icon: User },
-    { name: 'Resume Upload', completed: true, icon: FileText },
-    { name: 'Skills Assessment', completed: false, icon: Award },
-    { name: 'Work Experience', completed: true, icon: User },
-    { name: 'Education Details', completed: false, icon: Award },
-    { name: 'Portfolio Projects', completed: false, icon: FileText }
+    { name: 'Personal Information', completed: true, icon: User, path: '/profile?section=personal' },
+    { name: 'Resume Upload', completed: true, icon: FileText, path: '/profile?section=resume' },
+    { name: 'Skills Assessment', completed: false, icon: Award, path: '/assessments' },
+    { name: 'Work Experience', completed: true, icon: User, path: '/profile?section=experience' },
+    { name: 'Education Details', completed: false, icon: Award, path: '/profile?section=education' },
+    { name: 'Portfolio Projects', completed: false, icon: FileText, path: '/profile?section=projects' }
   ];
 
   const completedCount = completionItems.filter(item => item.completed).length;
@@ -61,7 +64,12 @@ const ProfileCompletion = () => {
                 </p>
               </div>
               {!item.completed && (
-                <Button size="sm" variant="outline" className="text-xs border-border-dark text-tech-green hover:bg-tech-green hover:text-dark-primary">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="text-xs border-border-dark text-tech-green hover:bg-tech-green hover:text-dark-primary"
+                  onClick={() => navigate(item.path)}
+                >
                   Complete
                 </Button>
               )}

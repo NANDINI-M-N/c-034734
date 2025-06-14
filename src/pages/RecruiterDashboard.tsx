@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
   Users, 
@@ -20,6 +21,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { useProfile } from '@/hooks/useProfile';
 
 interface StatCard {
   title: string;
@@ -47,6 +51,48 @@ interface Activity {
 const RecruiterDashboard = () => {
   const [activeNav, setActiveNav] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
+  const { signOut } = useAuth();
+  const { profile } = useProfile();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+  
+  const handleNavigation = (id: string) => {
+    setActiveNav(id);
+    switch(id) {
+      case 'interviews':
+        navigate('/interviews');
+        break;
+      case 'candidates':
+        navigate('/candidates');
+        break;
+      case 'analytics':
+        navigate('/reports');
+        break;
+      case 'settings':
+        navigate('/settings');
+        break;
+      default:
+        // Stay on dashboard
+        break;
+    }
+  };
+  
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      toast({
+        title: "Search initiated",
+        description: `Searching for "${searchQuery}"`,
+      });
+      // In a real app, this would navigate to search results or filter the current view
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
 
   // Mock data
   const stats: StatCard[] = [
@@ -160,9 +206,24 @@ const RecruiterDashboard = () => {
   ];
 
   const quickActions = [
-    { label: 'Schedule Interview', icon: Calendar, color: 'bg-tech-green' },
-    { label: 'Add Candidate', icon: Plus, color: 'bg-blue-600' },
-    { label: 'View Reports', icon: FileText, color: 'bg-purple-600' }
+    { 
+      label: 'Schedule Interview', 
+      icon: Calendar, 
+      color: 'bg-tech-green',
+      action: () => navigate('/schedule')
+    },
+    { 
+      label: 'Add Candidate', 
+      icon: Plus, 
+      color: 'bg-blue-600',
+      action: () => navigate('/candidates?action=add')
+    },
+    { 
+      label: 'View Reports', 
+      icon: FileText, 
+      color: 'bg-purple-600',
+      action: () => navigate('/reports')
+    }
   ];
 
   const getStatusColor = (status: string) => {
@@ -206,7 +267,7 @@ const RecruiterDashboard = () => {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveNav(item.id)}
+                  onClick={() => handleNavigation(item.id)}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
                     activeNav === item.id
                       ? 'bg-tech-green/10 text-tech-green border-r-2 border-tech-green'
@@ -228,13 +289,14 @@ const RecruiterDashboard = () => {
               <User size={20} className="text-tech-green" />
             </div>
             <div>
-              <div className="text-text-primary font-medium">John Recruiter</div>
+              <div className="text-text-primary font-medium">{profile?.first_name || ''} {profile?.last_name || ''}</div>
               <div className="text-text-secondary text-sm">Senior Recruiter</div>
             </div>
           </div>
           <Button 
             variant="ghost" 
             className="w-full justify-start text-text-secondary hover:text-text-primary"
+            onClick={handleSignOut}
           >
             <LogOut size={16} className="mr-2" />
             Logout
@@ -249,7 +311,7 @@ const RecruiterDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-text-primary mb-1">
-                Welcome back, John!
+                Welcome back, {profile?.first_name || 'Recruiter'}!
               </h1>
               <p className="text-text-secondary">
                 {new Date().toLocaleDateString('en-US', { 
@@ -262,7 +324,7 @@ const RecruiterDashboard = () => {
             </div>
             
             <div className="flex items-center space-x-4">
-              <div className="relative">
+              <form onSubmit={handleSearch} className="relative">
                 <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary" />
                 <Input
                   type="text"
@@ -271,9 +333,19 @@ const RecruiterDashboard = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 w-80 bg-dark-primary border-border-dark text-text-primary"
                 />
-              </div>
-              <Button variant="ghost" size="icon" className="text-text-secondary hover:text-text-primary">
+                <Button type="submit" className="hidden">Search</Button>
+              </form>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-text-secondary hover:text-text-primary relative"
+                onClick={() => toast({
+                  title: "Notifications",
+                  description: "You have 3 unread notifications",
+                })}
+              >
                 <Bell size={20} />
+                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
               </Button>
             </div>
           </div>
@@ -315,6 +387,7 @@ const RecruiterDashboard = () => {
                     <Button
                       key={index}
                       className={`${action.color} hover:opacity-90 h-16 text-white font-semibold`}
+                      onClick={action.action}
                     >
                       <IconComponent size={20} className="mr-2" />
                       {action.label}
@@ -368,7 +441,11 @@ const RecruiterDashboard = () => {
                   </TableHeader>
                   <TableBody>
                     {upcomingInterviews.map((interview) => (
-                      <TableRow key={interview.id} className="border-border-dark">
+                      <TableRow 
+                        key={interview.id} 
+                        className="border-border-dark cursor-pointer hover:bg-dark-primary/50"
+                        onClick={() => navigate(`/interview-room?id=${interview.id}`)}
+                      >
                         <TableCell className="text-text-primary font-medium">
                           {interview.candidate}
                         </TableCell>

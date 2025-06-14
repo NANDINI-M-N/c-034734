@@ -4,8 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Building, Video } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const UpcomingInterviews = () => {
+  const navigate = useNavigate();
+  
+  const handleJoinInterview = (interviewId: number) => {
+    navigate(`/interview-room?id=${interviewId}`);
+  };
   const upcomingInterviews = [
     {
       id: 1,
@@ -107,6 +113,7 @@ const UpcomingInterviews = () => {
                 <Button 
                   size="sm" 
                   className="bg-tech-green hover:bg-tech-green/90 text-dark-primary"
+                  onClick={() => handleJoinInterview(interview.id)}
                 >
                   <Video className="h-3 w-3 mr-1" />
                   Join

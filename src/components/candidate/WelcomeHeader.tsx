@@ -4,8 +4,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { User, Award, TrendingUp } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
 
 const WelcomeHeader = () => {
+  const { profile } = useProfile();
   const profileCompletion = 75;
   const achievements = [
     { name: 'Problem Solver', color: 'bg-tech-green' },
@@ -22,7 +24,7 @@ const WelcomeHeader = () => {
               <User className="h-8 w-8 text-dark-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-text-primary">Welcome back, Sarah!</h1>
+              <h1 className="text-2xl font-bold text-text-primary">Welcome back, {profile?.first_name || 'Candidate'}!</h1>
               <p className="text-text-secondary mt-1">Ready for your next coding challenge?</p>
               <div className="flex items-center gap-4 mt-3">
                 <div className="flex items-center gap-2">

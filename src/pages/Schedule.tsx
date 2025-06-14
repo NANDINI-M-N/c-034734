@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,19 +8,41 @@ import SchedulingWizard from '@/components/scheduling/SchedulingWizard';
 import AvailabilityManager from '@/components/scheduling/AvailabilityManager';
 import InterviewTemplates from '@/components/scheduling/InterviewTemplates';
 import CalendarIntegration from '@/components/scheduling/CalendarIntegration';
+import BackButton from '@/components/ui/back-button';
+import { useProfile } from '@/hooks/useProfile';
 
 const Schedule = () => {
   const [activeView, setActiveView] = useState('calendar');
   const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const { profile } = useProfile();
+
+  // Determine the back destination based on user role
+  const getBackDestination = () => {
+    if (profile?.role === 'recruiter') {
+      return '/recruiter-dashboard';
+    } else if (profile?.role === 'candidate') {
+      return '/candidate-dashboard';
+    } else {
+      return '/';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-dark-primary">
       {/* Header */}
       <div className="bg-dark-secondary border-b border-border-dark p-6">
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-text-primary mb-1">Interview Scheduling</h1>
-            <p className="text-text-secondary">Manage interviews, availability, and templates</p>
+          <div className="flex items-center gap-4">
+            <BackButton 
+              to={getBackDestination()}
+              label="Back to Dashboard" 
+              className="text-text-secondary hover:text-text-primary"
+            />
+            <div className="h-6 w-px bg-border-dark mx-1"></div>
+            <div>
+              <h1 className="text-2xl font-bold text-text-primary mb-1">Interview Scheduling</h1>
+              <p className="text-text-secondary">Manage interviews, availability, and templates</p>
+            </div>
           </div>
           
           <Button 

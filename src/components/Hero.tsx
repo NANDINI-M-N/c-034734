@@ -1,11 +1,17 @@
-
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Play } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Hero = () => {
   return (
-    <section className="relative bg-dark-primary py-20 px-4">
-      <div className="container mx-auto max-w-6xl">
+    <section className="relative bg-dark-primary py-20 px-4 overflow-hidden">
+      {/* Background Elements - Moved to the bottom of the stack */}
+      <div className="absolute inset-0 bg-gradient-to-b from-dark-primary via-dark-primary to-dark-secondary/80 pointer-events-none" style={{ zIndex: 0 }} />
+      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-tech-green/5 rounded-full blur-3xl" style={{ zIndex: 0 }} />
+      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-tech-green/5 rounded-full blur-3xl" style={{ zIndex: 0 }} />
+      
+      {/* Content - Ensure it's above the background */}
+      <div className="container mx-auto max-w-6xl relative z-10">
         <div className="text-center animate-fade-in">
           {/* Main Headline */}
           <h1 className="text-5xl md:text-6xl font-bold text-text-primary mb-6 leading-tight">
@@ -23,16 +29,19 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <Button 
               size="lg" 
-              className="bg-tech-green hover:bg-tech-green/90 text-dark-primary font-semibold px-8 py-4 text-lg group transition-all duration-200"
+              asChild
+              className="bg-tech-green hover:bg-tech-green/90 text-dark-primary font-semibold px-8 py-6 h-auto text-lg shadow-lg shadow-tech-green/20 hover:shadow-tech-green/30 transition-all duration-200"
             >
-              Start Free Trial
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              <Link to="/auth">
+                Start Free Trial
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </Button>
             
             <Button 
               variant="outline" 
               size="lg"
-              className="border-border-dark text-text-primary hover:bg-dark-secondary px-8 py-4 text-lg group"
+              className="border-tech-green border-2 text-tech-green hover:bg-dark-secondary hover:text-white px-8 py-6 h-auto text-lg group shadow-lg shadow-tech-green/10 hover:shadow-tech-green/20 transition-all duration-200"
             >
               <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
               Watch Demo
@@ -56,11 +65,6 @@ const Hero = () => {
           </div>
         </div>
       </div>
-      
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-b from-dark-primary via-dark-primary/95 to-dark-secondary pointer-events-none" />
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-tech-green/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-tech-green/5 rounded-full blur-3xl" />
     </section>
   );
 };

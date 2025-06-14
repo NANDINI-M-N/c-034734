@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Code, LogOut, User } from "lucide-react";
@@ -13,16 +12,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import LogoutNotification from "@/components/notifications/LogoutNotification";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showLogoutNotification, setShowLogoutNotification] = useState(false);
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/');
+    setShowLogoutNotification(true);
+    navigate('/', { state: { justLoggedOut: true } });
   };
 
   const getDashboardLink = () => {
@@ -41,7 +43,7 @@ const Header = () => {
   };
 
   return (
-    <header className="border-b border-border-dark bg-dark-secondary/80 backdrop-blur-md sticky top-0 z-50">
+    <header className="border-b border-border-dark bg-dark-secondary/90 backdrop-blur-md sticky top-0 z-50">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
@@ -75,14 +77,14 @@ const Header = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-tech-green text-tech-green hover:bg-tech-green hover:text-dark-primary"
+                  className="border-tech-green border-2 text-tech-green hover:bg-tech-green hover:text-dark-primary font-medium shadow-sm shadow-tech-green/10 hover:shadow-tech-green/20"
                 >
                   <Link to={getDashboardLink()}>Dashboard</Link>
                 </Button>
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-text-primary">
+                    <Button variant="ghost" size="sm" className="text-text-primary hover:bg-dark-primary hover:text-tech-green">
                       <User className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -109,13 +111,13 @@ const Header = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-tech-green text-tech-green hover:bg-tech-green hover:text-dark-primary"
+                  className="border-tech-green border-2 text-tech-green hover:bg-tech-green hover:text-dark-primary font-medium shadow-sm shadow-tech-green/10 hover:shadow-tech-green/20"
                 >
                   <Link to="/auth">Sign In</Link>
                 </Button>
                 <Button
                   asChild
-                  className="bg-tech-green hover:bg-tech-green/90 text-dark-primary"
+                  className="bg-tech-green hover:bg-tech-green/90 text-dark-primary font-medium shadow-sm shadow-tech-green/20 hover:shadow-tech-green/30"
                 >
                   <Link to="/auth">Get Started</Link>
                 </Button>
@@ -129,7 +131,7 @@ const Header = () => {
               variant="ghost"
               size="sm"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-text-primary"
+              className="text-text-primary hover:text-tech-green"
             >
               {isMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -171,7 +173,7 @@ const Header = () => {
                   <Button
                     asChild
                     variant="outline"
-                    className="border-tech-green text-tech-green hover:bg-tech-green hover:text-dark-primary justify-start"
+                    className="border-tech-green border-2 text-tech-green hover:bg-tech-green hover:text-dark-primary justify-start font-medium"
                   >
                     <Link to={getDashboardLink()} onClick={() => setIsMenuOpen(false)}>
                       Dashboard
@@ -183,7 +185,7 @@ const Header = () => {
                       setIsMenuOpen(false);
                     }}
                     variant="ghost"
-                    className="text-text-secondary hover:text-text-primary justify-start"
+                    className="text-text-secondary hover:text-tech-green justify-start"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
@@ -194,7 +196,7 @@ const Header = () => {
                   <Button
                     asChild
                     variant="outline"
-                    className="border-tech-green text-tech-green hover:bg-tech-green hover:text-dark-primary justify-start"
+                    className="border-tech-green border-2 text-tech-green hover:bg-tech-green hover:text-dark-primary justify-start font-medium"
                   >
                     <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
                       Sign In
@@ -202,7 +204,7 @@ const Header = () => {
                   </Button>
                   <Button
                     asChild
-                    className="bg-tech-green hover:bg-tech-green/90 text-dark-primary justify-start"
+                    className="bg-tech-green hover:bg-tech-green/90 text-dark-primary justify-start font-medium"
                   >
                     <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
                       Get Started
@@ -214,6 +216,13 @@ const Header = () => {
           </div>
         )}
       </nav>
+
+      {/* Logout Notification */}
+      {showLogoutNotification && (
+        <LogoutNotification 
+          onClose={() => setShowLogoutNotification(false)}
+        />
+      )}
     </header>
   );
 };

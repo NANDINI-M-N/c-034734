@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,11 +7,23 @@ import { useInterviews } from "@/hooks/useInterviews";
 import { useProfile } from "@/hooks/useProfile";
 import PageLoader from "@/components/loading/PageLoader";
 import { format } from "date-fns";
+import BackButton from "@/components/ui/back-button";
 
 const Interviews = () => {
   const { interviews, loading } = useInterviews();
   const { profile } = useProfile();
   const [filter, setFilter] = useState<'all' | 'scheduled' | 'completed'>('all');
+
+  // Determine the back destination based on user role
+  const getBackDestination = () => {
+    if (profile?.role === 'recruiter') {
+      return '/recruiter-dashboard';
+    } else if (profile?.role === 'candidate') {
+      return '/candidate-dashboard';
+    } else {
+      return '/';
+    }
+  };
 
   if (loading) {
     return <PageLoader text="Loading interviews..." />;
@@ -45,16 +56,24 @@ const Interviews = () => {
   return (
     <div className="min-h-screen bg-dark-primary">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text-primary mb-2">
-            {profile?.role === 'candidate' ? 'My Interviews' : 'Interview Management'}
-          </h1>
-          <p className="text-text-secondary">
-            {profile?.role === 'candidate' 
-              ? 'View your scheduled and completed interviews'
-              : 'Manage interviews and track candidate progress'
-            }
-          </p>
+        <div className="flex items-center gap-4 mb-6">
+          <BackButton 
+            to={getBackDestination()}
+            label="Back to Dashboard" 
+            className="text-text-secondary hover:text-text-primary"
+          />
+          <div className="h-6 w-px bg-border-dark"></div>
+          <div>
+            <h1 className="text-3xl font-bold text-text-primary mb-2">
+              {profile?.role === 'candidate' ? 'My Interviews' : 'Interview Management'}
+            </h1>
+            <p className="text-text-secondary">
+              {profile?.role === 'candidate' 
+                ? 'View your scheduled and completed interviews'
+                : 'Manage interviews and track candidate progress'
+              }
+            </p>
+          </div>
         </div>
 
         {/* Filter Buttons */}

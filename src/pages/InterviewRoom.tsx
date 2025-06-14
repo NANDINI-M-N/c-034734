@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -7,12 +6,16 @@ import { VideoCallPanel } from '@/components/interview/VideoCallPanel';
 import { CodeEditorPanel } from '@/components/interview/CodeEditorPanel';
 import { ChatNotesPanel } from '@/components/interview/ChatNotesPanel';
 import { AIAnalysisPanel } from '@/components/interview/AIAnalysisPanel';
-import { Settings, LogOut, Users, Circle, Timer } from 'lucide-react';
+import { Settings, LogOut, Users, Circle, Timer, ArrowLeft } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import BackButton from '@/components/ui/back-button';
 
 const InterviewRoom = () => {
   const [elapsedTime, setElapsedTime] = React.useState(1847); // 30:47 in seconds
   const [isRecording, setIsRecording] = React.useState(true);
   const [participantCount, setParticipantCount] = React.useState(2);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Format time to MM:SS
   const formatTime = (seconds: number) => {
@@ -29,14 +32,27 @@ const InterviewRoom = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const handleEndInterview = () => {
+    // In a real app, we would save the interview data before navigating away
+    navigate('/interviews');
+  };
+
   return (
     <div className="h-screen w-full bg-dark-primary flex flex-col">
       {/* Header Bar */}
       <header className="bg-dark-secondary border-b border-border-dark px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-6">
-          <div>
-            <h1 className="text-white font-semibold text-lg">Senior Frontend Developer Interview</h1>
-            <p className="text-text-secondary text-sm">Sarah Chen</p>
+          <div className="flex items-center gap-4">
+            <BackButton 
+              label="Back to Interviews" 
+              to="/interviews"
+              className="text-text-secondary hover:text-text-primary"
+            />
+            <div className="h-6 w-px bg-border-dark mx-2"></div>
+            <div>
+              <h1 className="text-white font-semibold text-lg">Senior Frontend Developer Interview</h1>
+              <p className="text-text-secondary text-sm">Sarah Chen</p>
+            </div>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -88,7 +104,12 @@ const InterviewRoom = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Button variant="destructive" size="sm" className="bg-red-600 hover:bg-red-700">
+          <Button 
+            variant="destructive" 
+            size="sm" 
+            className="bg-red-600 hover:bg-red-700"
+            onClick={handleEndInterview}
+          >
             <LogOut className="w-4 h-4 mr-2" />
             End Interview
           </Button>
