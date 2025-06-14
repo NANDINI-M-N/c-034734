@@ -3,7 +3,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
 import { Card } from '@/components/ui/card';
-import { useEditorStore } from '@/hooks/useEditorStore';
 
 interface MonacoEditorProps {
   language: string;
@@ -25,7 +24,7 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const handleEditorDidMount = (editor: editor.IStandaloneCodeEditor) => {
+  const handleEditorDidMount = (editor: editor.IStandaloneCodeEditor, monaco: any) => {
     editorRef.current = editor;
     setIsLoading(false);
 
