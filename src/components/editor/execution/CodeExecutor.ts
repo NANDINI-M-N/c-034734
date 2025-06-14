@@ -1,4 +1,3 @@
-
 export interface ExecutionResult {
   success: boolean;
   output: string;
@@ -24,9 +23,14 @@ export interface TestResult {
   error?: string;
 }
 
-// Extended Window interface for iframe execution context
-interface IframeWindow extends Window {
-  console: Console;
+// Custom interface for iframe execution context
+interface IframeWindow {
+  console: {
+    log: (...args: any[]) => void;
+    error: (...args: any[]) => void;
+    warn: (...args: any[]) => void;
+    info: (...args: any[]) => void;
+  };
   eval: (code: string) => any;
   prompt?: () => string;
 }
@@ -93,7 +97,7 @@ export class CodeExecutor {
       iframe.style.display = 'none';
       document.body.appendChild(iframe);
 
-      const iframeWindow = iframe.contentWindow as IframeWindow | null;
+      const iframeWindow = iframe.contentWindow as any;
       if (!iframeWindow) {
         resolve({
           success: false,
@@ -113,7 +117,7 @@ export class CodeExecutor {
         },
         warn: (...args: any[]) => outputs.push('Warning: ' + args.map(String).join(' ')),
         info: (...args: any[]) => outputs.push('Info: ' + args.map(String).join(' '))
-      } as Console;
+      };
 
       // Add input handling
       if (input) {
