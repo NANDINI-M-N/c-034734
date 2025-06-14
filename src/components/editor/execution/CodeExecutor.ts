@@ -24,6 +24,13 @@ export interface TestResult {
   error?: string;
 }
 
+// Extended Window interface for iframe execution context
+interface IframeWindow extends Window {
+  console: Console;
+  eval: (code: string) => any;
+  prompt?: () => string;
+}
+
 export class CodeExecutor {
   private static instance: CodeExecutor;
   private workers: Map<string, Worker> = new Map();
@@ -86,7 +93,7 @@ export class CodeExecutor {
       iframe.style.display = 'none';
       document.body.appendChild(iframe);
 
-      const iframeWindow = iframe.contentWindow;
+      const iframeWindow = iframe.contentWindow as IframeWindow | null;
       if (!iframeWindow) {
         resolve({
           success: false,
@@ -106,13 +113,13 @@ export class CodeExecutor {
         },
         warn: (...args: any[]) => outputs.push('Warning: ' + args.map(String).join(' ')),
         info: (...args: any[]) => outputs.push('Info: ' + args.map(String).join(' '))
-      } as any;
+      } as Console;
 
       // Add input handling
       if (input) {
         const inputLines = input.split('\n');
         let inputIndex = 0;
-        (iframeWindow as any).prompt = () => {
+        iframeWindow.prompt = () => {
           return inputIndex < inputLines.length ? inputLines[inputIndex++] : '';
         };
       }

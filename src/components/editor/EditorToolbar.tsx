@@ -15,7 +15,7 @@ import {
   Maximize2,
   Sun,
   Moon,
-  play,
+  Play,
   PanelRightClose,
   PanelRightOpen
 } from 'lucide-react';
