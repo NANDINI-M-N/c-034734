@@ -1,213 +1,137 @@
 
-import { useState, useMemo } from 'react';
-import { Search, Filter, Grid, List, Plus, Mail, Calendar, Download, Tag } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CandidateTable } from '@/components/candidates/CandidateTable';
-import { CandidateCards } from '@/components/candidates/CandidateCards';
-import { CandidateFilters } from '@/components/candidates/CandidateFilters';
-import { BulkActions } from '@/components/candidates/BulkActions';
-import { mockCandidates, Candidate } from '@/data/mockCandidates';
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, Mail, Phone, Calendar } from "lucide-react";
+import { useCandidates } from "@/hooks/useCandidates";
+import PageLoader from "@/components/loading/PageLoader";
+import { format } from "date-fns";
 
 const Candidates = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
-  const [showFilters, setShowFilters] = useState(false);
-  const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
-  
-  // Filter states
-  const [skillsFilter, setSkillsFilter] = useState<string[]>([]);
-  const [experienceFilter, setExperienceFilter] = useState<string[]>([]);
-  const [locationFilter, setLocationFilter] = useState<string[]>([]);
-  const [availabilityFilter, setAvailabilityFilter] = useState<string[]>([]);
-  const [ratingFilter, setRatingFilter] = useState<number | null>(null);
+  const { candidates, loading } = useCandidates();
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Filtered candidates
-  const filteredCandidates = useMemo(() => {
-    return mockCandidates.filter(candidate => {
-      // Search filter
-      const searchMatch = !searchQuery || 
-        candidate.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        candidate.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        candidate.skills.some(skill => skill.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  if (loading) {
+    return <PageLoader text="Loading candidates..." />;
+  }
 
-      // Skills filter
-      const skillsMatch = skillsFilter.length === 0 || 
-        skillsFilter.some(skill => candidate.skills.some(s => s.name === skill));
+  const filteredCandidates = candidates.filter(candidate => {
+    const fullName = `${candidate.first_name || ''} ${candidate.last_name || ''}`.toLowerCase();
+    const email = candidate.email.toLowerCase();
+    const search = searchTerm.toLowerCase();
+    
+    return fullName.includes(search) || email.includes(search);
+  });
 
-      // Experience filter
-      const experienceMatch = experienceFilter.length === 0 || 
-        experienceFilter.includes(candidate.experienceLevel);
-
-      // Location filter
-      const locationMatch = locationFilter.length === 0 || 
-        locationFilter.includes(candidate.location);
-
-      // Availability filter
-      const availabilityMatch = availabilityFilter.length === 0 || 
-        availabilityFilter.includes(candidate.availability);
-
-      // Rating filter
-      const ratingMatch = ratingFilter === null || candidate.overallRating >= ratingFilter;
-
-      return searchMatch && skillsMatch && experienceMatch && locationMatch && availabilityMatch && ratingMatch;
-    });
-  }, [searchQuery, skillsFilter, experienceFilter, locationFilter, availabilityFilter, ratingFilter]);
-
-  const handleSelectCandidate = (candidateId: string) => {
-    setSelectedCandidates(prev => 
-      prev.includes(candidateId) 
-        ? prev.filter(id => id !== candidateId)
-        : [...prev, candidateId]
-    );
+  const getInitials = (firstName: string | null, lastName: string | null) => {
+    const first = firstName?.charAt(0) || '';
+    const last = lastName?.charAt(0) || '';
+    return `${first}${last}`.toUpperCase() || 'C';
   };
-
-  const handleSelectAll = () => {
-    if (selectedCandidates.length === filteredCandidates.length) {
-      setSelectedCandidates([]);
-    } else {
-      setSelectedCandidates(filteredCandidates.map(c => c.id));
-    }
-  };
-
-  const clearFilters = () => {
-    setSkillsFilter([]);
-    setExperienceFilter([]);
-    setLocationFilter([]);
-    setAvailabilityFilter([]);
-    setRatingFilter(null);
-  };
-
-  const activeFiltersCount = skillsFilter.length + experienceFilter.length + locationFilter.length + availabilityFilter.length + (ratingFilter ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-dark-primary">
-      {/* Header */}
-      <div className="bg-dark-secondary border-b border-border-dark p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-text-primary mb-2">Candidate Management</h1>
-            <p className="text-text-secondary">
-              {filteredCandidates.length} of {mockCandidates.length} candidates
-            </p>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <Button className="bg-tech-green hover:bg-tech-green/90 text-dark-primary">
-              <Plus size={16} className="mr-2" />
-              Add Candidate
-            </Button>
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-text-primary mb-2">Candidates</h1>
+          <p className="text-text-secondary">
+            Manage and review candidate profiles
+          </p>
         </div>
 
-        {/* Search and Controls */}
-        <div className="flex items-center justify-between space-x-4">
-          <div className="flex items-center space-x-4 flex-1">
-            <div className="relative flex-1 max-w-md">
-              <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary" />
-              <Input
-                type="text"
-                placeholder="Search candidates by name, email, or skills..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-dark-primary border-border-dark text-text-primary"
-              />
-            </div>
-            
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className="border-border-dark text-text-secondary hover:text-text-primary"
-            >
-              <Filter size={16} className="mr-2" />
-              Filters
-              {activeFiltersCount > 0 && (
-                <Badge variant="secondary" className="ml-2 bg-tech-green text-dark-primary">
-                  {activeFiltersCount}
-                </Badge>
-              )}
-            </Button>
-
-            {activeFiltersCount > 0 && (
-              <Button
-                variant="ghost"
-                onClick={clearFilters}
-                className="text-text-secondary hover:text-text-primary"
-              >
-                Clear All
-              </Button>
-            )}
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <div className="flex bg-dark-primary rounded-lg p-1">
-              <Button
-                variant={viewMode === 'table' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('table')}
-                className={viewMode === 'table' ? 'bg-tech-green text-dark-primary' : 'text-text-secondary'}
-              >
-                <List size={16} />
-              </Button>
-              <Button
-                variant={viewMode === 'cards' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('cards')}
-                className={viewMode === 'cards' ? 'bg-tech-green text-dark-primary' : 'text-text-secondary'}
-              >
-                <Grid size={16} />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Bulk Actions */}
-        {selectedCandidates.length > 0 && (
-          <BulkActions
-            selectedCount={selectedCandidates.length}
-            onClearSelection={() => setSelectedCandidates([])}
-          />
-        )}
-      </div>
-
-      <div className="flex">
-        {/* Filters Sidebar */}
-        {showFilters && (
-          <div className="w-80 bg-dark-secondary border-r border-border-dark">
-            <CandidateFilters
-              skillsFilter={skillsFilter}
-              setSkillsFilter={setSkillsFilter}
-              experienceFilter={experienceFilter}
-              setExperienceFilter={setExperienceFilter}
-              locationFilter={locationFilter}
-              setLocationFilter={setLocationFilter}
-              availabilityFilter={availabilityFilter}
-              setAvailabilityFilter={setAvailabilityFilter}
-              ratingFilter={ratingFilter}
-              setRatingFilter={setRatingFilter}
+        {/* Search */}
+        <div className="mb-6">
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-secondary" />
+            <Input
+              placeholder="Search candidates..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-dark-secondary border-border-dark text-text-primary"
             />
+          </div>
+        </div>
+
+        {filteredCandidates.length === 0 ? (
+          <Card className="bg-dark-secondary border-border-dark">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <Search className="h-12 w-12 text-text-secondary mb-4" />
+              <h3 className="text-lg font-semibold text-text-primary mb-2">
+                {searchTerm ? 'No candidates found' : 'No candidates registered'}
+              </h3>
+              <p className="text-text-secondary text-center">
+                {searchTerm 
+                  ? 'Try adjusting your search terms'
+                  : 'Candidates will appear here once they register'
+                }
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredCandidates.map((candidate) => (
+              <Card key={candidate.id} className="bg-dark-secondary border-border-dark hover:border-tech-green/50 transition-colors">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={candidate.avatar_url || undefined} />
+                      <AvatarFallback className="bg-tech-green text-dark-primary">
+                        {getInitials(candidate.first_name, candidate.last_name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <CardTitle className="text-text-primary text-lg">
+                        {candidate.first_name} {candidate.last_name}
+                      </CardTitle>
+                      <Badge variant="outline" className="border-tech-green text-tech-green mt-1">
+                        Candidate
+                      </Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center gap-2 text-text-secondary">
+                    <Mail className="h-4 w-4" />
+                    <span className="text-sm truncate">{candidate.email}</span>
+                  </div>
+                  
+                  {candidate.phone && (
+                    <div className="flex items-center gap-2 text-text-secondary">
+                      <Phone className="h-4 w-4" />
+                      <span className="text-sm">{candidate.phone}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center gap-2 text-text-secondary">
+                    <Calendar className="h-4 w-4" />
+                    <span className="text-sm">
+                      Joined {format(new Date(candidate.created_at), 'PP')}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <Button 
+                      size="sm" 
+                      className="bg-tech-green hover:bg-tech-green/90 text-dark-primary"
+                    >
+                      Schedule Interview
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="border-border-dark text-text-secondary hover:text-text-primary"
+                    >
+                      View Profile
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         )}
-
-        {/* Main Content */}
-        <div className="flex-1 p-6">
-          {viewMode === 'table' ? (
-            <CandidateTable
-              candidates={filteredCandidates}
-              selectedCandidates={selectedCandidates}
-              onSelectCandidate={handleSelectCandidate}
-              onSelectAll={handleSelectAll}
-            />
-          ) : (
-            <CandidateCards
-              candidates={filteredCandidates}
-              selectedCandidates={selectedCandidates}
-              onSelectCandidate={handleSelectCandidate}
-            />
-          )}
-        </div>
       </div>
     </div>
   );

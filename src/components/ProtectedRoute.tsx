@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 import PageLoader from '@/components/loading/PageLoader';
 
 interface ProtectedRouteProps {
@@ -10,16 +11,39 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requireRole }: ProtectedRouteProps) => {
-  const { user, loading, session } = useAuth();
+  const { user, loading: authLoading, session } = useAuth();
+  const { profile, loading: profileLoading } = useProfile();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       navigate('/auth');
     }
-  }, [user, loading, navigate]);
+  }, [user, authLoading, navigate]);
 
-  if (loading) {
+  useEffect(() => {
+    // Check role-based access control once profile is loaded
+    if (!authLoading && !profileLoading && user && profile && requireRole) {
+      if (profile.role !== requireRole) {
+        // Redirect to appropriate dashboard based on user's role
+        switch (profile.role) {
+          case 'admin':
+            navigate('/admin-dashboard');
+            break;
+          case 'recruiter':
+            navigate('/recruiter-dashboard');
+            break;
+          case 'candidate':
+            navigate('/candidate-dashboard');
+            break;
+          default:
+            navigate('/');
+        }
+      }
+    }
+  }, [user, profile, authLoading, profileLoading, requireRole, navigate]);
+
+  if (authLoading || (user && profileLoading)) {
     return <PageLoader text="Authenticating..." />;
   }
 
@@ -27,10 +51,10 @@ const ProtectedRoute = ({ children, requireRole }: ProtectedRouteProps) => {
     return <PageLoader text="Redirecting to login..." />;
   }
 
-  // TODO: Add role-based access control here when user profile is fetched
-  // if (requireRole && userProfile?.role !== requireRole) {
-  //   return <Navigate to="/unauthorized" replace />;
-  // }
+  // If role is required but user doesn't have the right role, show loading while redirecting
+  if (requireRole && profile && profile.role !== requireRole) {
+    return <PageLoader text="Redirecting..." />;
+  }
 
   return <>{children}</>;
 };
