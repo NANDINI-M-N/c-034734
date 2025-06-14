@@ -15,6 +15,7 @@ import InterviewRoom from "./pages/InterviewRoom";
 import CandidateDashboard from "./pages/CandidateDashboard";
 import Schedule from "./pages/Schedule";
 import AdminDashboard from "./pages/AdminDashboard";
+import Reports from "./pages/Reports";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/candidates" element={<Candidates />} />
           <Route path="/interview-room" element={<InterviewRoom />} />
           <Route path="/schedule" element={<Schedule />} />
+          <Route path="/reports" element={<Reports />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
