@@ -13,7 +13,7 @@ import {
   Settings, 
   Download, 
   Upload, 
-  Sync, 
+  RotateCw, 
   Mail,
   Clock,
   Link,
@@ -75,7 +75,7 @@ const CalendarIntegration = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'connected': return <CheckCircle size={16} className="text-tech-green" />;
-      case 'syncing': return <Sync size={16} className="text-blue-400 animate-spin" />;
+      case 'syncing': return <RotateCw size={16} className="text-blue-400 animate-spin" />;
       case 'disconnected': return <AlertCircle size={16} className="text-red-400" />;
       case 'error': return <AlertCircle size={16} className="text-yellow-400" />;
       default: return <AlertCircle size={16} className="text-gray-400" />;
@@ -101,7 +101,7 @@ const CalendarIntegration = () => {
         <Card className="bg-dark-secondary border-border-dark">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <Sync className="h-8 w-8 text-blue-400" />
+              <RotateCw className="h-8 w-8 text-blue-400" />
               <div>
                 <p className="text-lg font-semibold text-text-primary">57</p>
                 <p className="text-sm text-text-secondary">Synced Events</p>
@@ -171,7 +171,7 @@ const CalendarIntegration = () => {
                       <Settings size={14} />
                     </Button>
                     <Button size="sm" variant="outline" className="border-border-dark text-text-secondary hover:text-text-primary">
-                      <Sync size={14} />
+                      <RotateCw size={14} />
                     </Button>
                   </div>
                 ) : (
