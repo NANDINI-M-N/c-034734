@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Monitor, Window, Chrome, Settings } from 'lucide-react';
+import { Monitor, Chrome, Settings } from 'lucide-react';
 
 interface ScreenShareOption {
   id: string;
@@ -34,7 +34,7 @@ export const ScreenShareModal: React.FC<ScreenShareModalProps> = ({
   const getIcon = (type: string) => {
     switch (type) {
       case 'screen': return <Monitor className="w-6 h-6" />;
-      case 'window': return <Window className="w-6 h-6" />;
+      case 'window': return <Monitor className="w-6 h-6" />;
       case 'tab': return <Chrome className="w-6 h-6" />;
       default: return <Monitor className="w-6 h-6" />;
     }
