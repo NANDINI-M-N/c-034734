@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { circle-plus, circle-x, play, file-plus, file-minus } from 'lucide-react';
+import { PlusCircle, XCircle, Play, FilePlus, Minus } from 'lucide-react';
 import { TestCase } from './CodeExecutor';
 
 interface TestCaseManagerProps {
@@ -135,7 +134,7 @@ export const TestCaseManager: React.FC<TestCaseManagerProps> = ({ onRunTests }) 
             onClick={createNewTestCase}
             className="h-7 px-3 bg-tech-green hover:bg-tech-green/80"
           >
-            <circle-plus className="w-3 h-3 mr-1" />
+            <PlusCircle className="w-3 h-3 mr-1" />
             New Test
           </Button>
           {testCases.length > 0 && (
@@ -144,7 +143,7 @@ export const TestCaseManager: React.FC<TestCaseManagerProps> = ({ onRunTests }) 
               onClick={() => onRunTests(testCases)}
               className="h-7 px-3 bg-blue-600 hover:bg-blue-600/80"
             >
-              <play className="w-3 h-3 mr-1" />
+              <Play className="w-3 h-3 mr-1" />
               Run All
             </Button>
           )}
@@ -196,7 +195,7 @@ export const TestCaseManager: React.FC<TestCaseManagerProps> = ({ onRunTests }) 
 
         {testCases.length === 0 && !editingCase ? (
           <div className="flex flex-col items-center justify-center h-32 text-text-secondary">
-            <file-plus className="w-8 h-8 mb-2 opacity-50" />
+            <FilePlus className="w-8 h-8 mb-2 opacity-50" />
             <p className="text-sm">No test cases yet</p>
             <p className="text-xs">Create your first test case or use a template</p>
           </div>
@@ -340,7 +339,7 @@ const TestCaseCard: React.FC<TestCaseCardProps> = ({ testCase, index, onEdit, on
               onClick={() => onDelete(testCase.id)}
               className="h-6 w-6 p-0 text-text-secondary hover:text-red-400"
             >
-              <circle-x className="w-3 h-3" />
+              <XCircle className="w-3 h-3" />
             </Button>
           </div>
         </div>

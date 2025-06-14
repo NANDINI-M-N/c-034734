@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
-import { play, stop, timer, circle-check, circle-x, console } from 'lucide-react';
+import { Play, Square, Timer, CheckCircle, XCircle, Terminal } from 'lucide-react';
 import { CodeExecutor, ExecutionResult, TestResult } from './CodeExecutor';
 import { TestCaseManager } from './TestCaseManager';
 import { ExecutionHistory } from './ExecutionHistory';
@@ -116,7 +115,7 @@ export const ExecutionPanel: React.FC<ExecutionPanelProps> = ({
               disabled={isExecuting}
               className="h-7 px-3 bg-tech-green hover:bg-tech-green/80"
             >
-              <play className="w-3 h-3 mr-1" />
+              <Play className="w-3 h-3 mr-1" />
               Run
             </Button>
             {isExecuting && (
@@ -126,7 +125,7 @@ export const ExecutionPanel: React.FC<ExecutionPanelProps> = ({
                 onClick={handleStopExecution}
                 className="h-7 px-3 border-red-500 text-red-500 hover:bg-red-500/10"
               >
-                <stop className="w-3 h-3 mr-1" />
+                <Square className="w-3 h-3 mr-1" />
                 Stop
               </Button>
             )}
@@ -152,15 +151,15 @@ export const ExecutionPanel: React.FC<ExecutionPanelProps> = ({
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
           <TabsList className="grid w-full grid-cols-4 bg-dark-primary border-b border-border-dark rounded-none">
             <TabsTrigger value="console" className="text-xs">
-              <console className="w-3 h-3 mr-1" />
+              <Terminal className="w-3 h-3 mr-1" />
               Console
             </TabsTrigger>
             <TabsTrigger value="tests" className="text-xs">
-              <circle-check className="w-3 h-3 mr-1" />
+              <CheckCircle className="w-3 h-3 mr-1" />
               Tests {totalTests > 0 && `(${passedTests}/${totalTests})`}
             </TabsTrigger>
             <TabsTrigger value="history" className="text-xs">
-              <timer className="w-3 h-3 mr-1" />
+              <Timer className="w-3 h-3 mr-1" />
               History
             </TabsTrigger>
             <TabsTrigger value="test-editor" className="text-xs">
@@ -177,9 +176,9 @@ export const ExecutionPanel: React.FC<ExecutionPanelProps> = ({
                     <div className="flex items-center gap-2 mb-3">
                       <Badge variant={executionResult.success ? "default" : "destructive"}>
                         {executionResult.success ? (
-                          <circle-check className="w-3 h-3 mr-1" />
+                          <CheckCircle className="w-3 h-3 mr-1" />
                         ) : (
-                          <circle-x className="w-3 h-3 mr-1" />
+                          <XCircle className="w-3 h-3 mr-1" />
                         )}
                         {executionResult.success ? 'Success' : 'Error'}
                       </Badge>
@@ -252,9 +251,9 @@ export const ExecutionPanel: React.FC<ExecutionPanelProps> = ({
                           <div className="flex items-center gap-2">
                             <Badge variant={result.passed ? "default" : "destructive"}>
                               {result.passed ? (
-                                <circle-check className="w-3 h-3 mr-1" />
+                                <CheckCircle className="w-3 h-3 mr-1" />
                               ) : (
-                                <circle-x className="w-3 h-3 mr-1" />
+                                <XCircle className="w-3 h-3 mr-1" />
                               )}
                               {result.passed ? 'Pass' : 'Fail'}
                             </Badge>

@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { timer, circle-check, circle-x, play } from 'lucide-react';
+import { Timer, CheckCircle, XCircle, Play } from 'lucide-react';
 import { ExecutionResult } from './CodeExecutor';
 
 interface ExecutionRecord {
@@ -62,7 +61,7 @@ export const ExecutionHistory: React.FC = () => {
   if (history.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-text-secondary p-8">
-        <timer className="w-12 h-12 mb-4 opacity-50" />
+        <Timer className="w-12 h-12 mb-4 opacity-50" />
         <h3 className="text-lg font-medium mb-2">No Execution History</h3>
         <p className="text-sm text-center">
           Your code execution history will appear here after you run some code.
@@ -109,9 +108,9 @@ export const ExecutionHistory: React.FC = () => {
                       </Badge>
                       <Badge variant={record.result.success ? "default" : "destructive"}>
                         {record.result.success ? (
-                          <circle-check className="w-3 h-3 mr-1" />
+                          <CheckCircle className="w-3 h-3 mr-1" />
                         ) : (
-                          <circle-x className="w-3 h-3 mr-1" />
+                          <XCircle className="w-3 h-3 mr-1" />
                         )}
                         {record.result.success ? 'Success' : 'Error'}
                       </Badge>
@@ -125,7 +124,7 @@ export const ExecutionHistory: React.FC = () => {
                       }}
                       className="h-6 w-6 p-0 text-text-secondary hover:text-white"
                     >
-                      <play className="w-3 h-3" />
+                      <Play className="w-3 h-3" />
                     </Button>
                   </div>
 
@@ -241,7 +240,7 @@ export const ExecutionHistory: React.FC = () => {
         ) : (
           <div className="flex items-center justify-center h-full text-text-secondary">
             <div className="text-center">
-              <timer className="w-8 h-8 mb-2 mx-auto opacity-50" />
+              <Timer className="w-8 h-8 mb-2 mx-auto opacity-50" />
               <p className="text-sm">Select an execution from the history to view details</p>
             </div>
           </div>
