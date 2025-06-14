@@ -24,12 +24,13 @@ import {
   FileText
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 
 const ReportBuilder = () => {
   const [reportName, setReportName] = useState('');
   const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [dateRange, setDateRange] = useState<{from?: Date, to?: Date}>({});
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [visualizationType, setVisualizationType] = useState('');
 
   const availableMetrics = [
@@ -196,7 +197,7 @@ const ReportBuilder = () => {
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full mt-1 justify-start border-border-dark text-text-secondary hover:text-text-primary">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateRange.from ? format(dateRange.from, "PPP") : "Select date range"}
+                        {dateRange?.from ? format(dateRange.from, "PPP") : "Select date range"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 bg-dark-secondary border-border-dark">
