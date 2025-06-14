@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,6 +12,7 @@ import Interviews from "./pages/Interviews";
 import Candidates from "./pages/Candidates";
 import InterviewRoom from "./pages/InterviewRoom";
 import CandidateDashboard from "./pages/CandidateDashboard";
+import Schedule from "./pages/Schedule";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +31,7 @@ const App = () => (
           <Route path="/interviews" element={<Interviews />} />
           <Route path="/candidates" element={<Candidates />} />
           <Route path="/interview-room" element={<InterviewRoom />} />
+          <Route path="/schedule" element={<Schedule />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
