@@ -1,81 +1,219 @@
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Menu, X, Code, LogOut, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const { profile } = useProfile();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const getDashboardLink = () => {
+    if (!profile) return '/candidate-dashboard';
+    
+    switch (profile.role) {
+      case 'admin':
+        return '/admin-dashboard';
+      case 'recruiter':
+        return '/recruiter-dashboard';
+      case 'candidate':
+        return '/candidate-dashboard';
+      default:
+        return '/candidate-dashboard';
+    }
+  };
 
   return (
-    <header className="bg-dark-primary border-b border-border-dark">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+    <header className="border-b border-border-dark bg-dark-secondary/80 backdrop-blur-md sticky top-0 z-50">
+      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-tech-green rounded-lg flex items-center justify-center">
-              <span className="text-dark-primary font-bold text-lg font-mono">&lt;/&gt;</span>
-            </div>
-            <span className="text-text-primary font-bold text-xl">CodeInterview Pro</span>
+            <Code className="h-8 w-8 text-tech-green" />
+            <span className="text-xl font-bold text-text-primary">HackerRank Clone</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-text-secondary hover:text-text-primary transition-colors duration-200">
+          <div className="hidden md:flex items-center space-x-8">
+            <Link 
+              to="/#features" 
+              className="text-text-secondary hover:text-tech-green transition-colors"
+            >
               Features
-            </a>
-            <a href="#pricing" className="text-text-secondary hover:text-text-primary transition-colors duration-200">
+            </Link>
+            <Link 
+              to="/#pricing" 
+              className="text-text-secondary hover:text-tech-green transition-colors"
+            >
               Pricing
-            </a>
-            <a href="#about" className="text-text-secondary hover:text-text-primary transition-colors duration-200">
+            </Link>
+            <Link 
+              to="/#about" 
+              className="text-text-secondary hover:text-tech-green transition-colors"
+            >
               About
-            </a>
-          </nav>
-
-          {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" className="text-text-secondary hover:text-text-primary hover:bg-dark-secondary" asChild>
-              <Link to="/login">Login</Link>
-            </Button>
-            <Button className="bg-tech-green hover:bg-tech-green/90 text-dark-primary font-semibold" asChild>
-              <Link to="/register">Start Free Trial</Link>
-            </Button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-text-primary"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border-dark">
-            <nav className="flex flex-col space-y-4">
-              <a href="#features" className="text-text-secondary hover:text-text-primary transition-colors">
-                Features
-              </a>
-              <a href="#pricing" className="text-text-secondary hover:text-text-primary transition-colors">
-                Pricing
-              </a>
-              <a href="#about" className="text-text-secondary hover:text-text-primary transition-colors">
-                About
-              </a>
-              <div className="flex flex-col space-y-2 pt-4">
-                <Button variant="ghost" className="text-text-secondary hover:text-text-primary hover:bg-dark-secondary justify-start" asChild>
-                  <Link to="/login">Login</Link>
+            </Link>
+            
+            {user ? (
+              <div className="flex items-center gap-4">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="border-tech-green text-tech-green hover:bg-tech-green hover:text-dark-primary"
+                >
+                  <Link to={getDashboardLink()}>Dashboard</Link>
                 </Button>
-                <Button className="bg-tech-green hover:bg-tech-green/90 text-dark-primary font-semibold justify-start" asChild>
-                  <Link to="/register">Start Free Trial</Link>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="text-text-primary">
+                      <User className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-dark-secondary border-border-dark">
+                    <DropdownMenuLabel className="text-text-primary">
+                      {profile?.first_name} {profile?.last_name}
+                    </DropdownMenuLabel>
+                    <DropdownMenuLabel className="text-text-secondary text-xs font-normal">
+                      {profile?.email}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-border-dark" />
+                    <DropdownMenuItem 
+                      onClick={handleSignOut}
+                      className="text-text-secondary hover:text-text-primary"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="border-tech-green text-tech-green hover:bg-tech-green hover:text-dark-primary"
+                >
+                  <Link to="/auth">Sign In</Link>
+                </Button>
+                <Button
+                  asChild
+                  className="bg-tech-green hover:bg-tech-green/90 text-dark-primary"
+                >
+                  <Link to="/auth">Get Started</Link>
                 </Button>
               </div>
-            </nav>
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-text-primary"
+            >
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden py-4 border-t border-border-dark">
+            <div className="flex flex-col space-y-4">
+              <Link 
+                to="/#features" 
+                className="text-text-secondary hover:text-tech-green transition-colors px-2 py-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Features
+              </Link>
+              <Link 
+                to="/#pricing" 
+                className="text-text-secondary hover:text-tech-green transition-colors px-2 py-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Pricing
+              </Link>
+              <Link 
+                to="/#about" 
+                className="text-text-secondary hover:text-tech-green transition-colors px-2 py-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                About
+              </Link>
+              
+              {user ? (
+                <div className="flex flex-col space-y-2 pt-2 border-t border-border-dark">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="border-tech-green text-tech-green hover:bg-tech-green hover:text-dark-primary justify-start"
+                  >
+                    <Link to={getDashboardLink()} onClick={() => setIsMenuOpen(false)}>
+                      Dashboard
+                    </Link>
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleSignOut();
+                      setIsMenuOpen(false);
+                    }}
+                    variant="ghost"
+                    className="text-text-secondary hover:text-text-primary justify-start"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col space-y-2 pt-2 border-t border-border-dark">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="border-tech-green text-tech-green hover:bg-tech-green hover:text-dark-primary justify-start"
+                  >
+                    <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                      Sign In
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    className="bg-tech-green hover:bg-tech-green/90 text-dark-primary justify-start"
+                  >
+                    <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                      Get Started
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         )}
-      </div>
+      </nav>
     </header>
   );
 };

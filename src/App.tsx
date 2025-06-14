@@ -4,10 +4,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ServerError from "./pages/ServerError";
 import RecruiterDashboard from "./pages/RecruiterDashboard";
@@ -32,28 +33,88 @@ const queryClient = new QueryClient({
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/recruiter-dashboard" element={<RecruiterDashboard />} />
-            <Route path="/candidate-dashboard" element={<CandidateDashboard />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/interviews" element={<Interviews />} />
-            <Route path="/candidates" element={<Candidates />} />
-            <Route path="/interview-room" element={<InterviewRoom />} />
-            <Route path="/schedule" element={<Schedule />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/error" element={<ServerError />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              
+              {/* Protected Routes */}
+              <Route 
+                path="/recruiter-dashboard" 
+                element={
+                  <ProtectedRoute requireRole="recruiter">
+                    <RecruiterDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/candidate-dashboard" 
+                element={
+                  <ProtectedRoute requireRole="candidate">
+                    <CandidateDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin-dashboard" 
+                element={
+                  <ProtectedRoute requireRole="admin">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/interviews" 
+                element={
+                  <ProtectedRoute>
+                    <Interviews />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/candidates" 
+                element={
+                  <ProtectedRoute requireRole="recruiter">
+                    <Candidates />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/interview-room" 
+                element={
+                  <ProtectedRoute>
+                    <InterviewRoom />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/schedule" 
+                element={
+                  <ProtectedRoute>
+                    <Schedule />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/reports" 
+                element={
+                  <ProtectedRoute requireRole="recruiter">
+                    <Reports />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Error Routes */}
+              <Route path="/error" element={<ServerError />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   </ErrorBoundary>
 );
